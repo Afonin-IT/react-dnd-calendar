@@ -1,34 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Calendar from "./components/Calendar";
+import MainLayer from "./layers/MainLayer";
+import Header from "./components/Header";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const { holidays, fetchHolidays, isLoading } = useHolidayStore();
+  // const {tasks, add, delete: deleteTask} = useTaskStore();
+
+  // const handleAdd = (name: string) => {
+  //   const currentDate = dayjs().format('YYYY-MM-DD');
+  //
+  //   add(currentDate, {
+  //     name
+  //   });
+  // }
+  //
+  // const handleDelete = (date: string, id: string) => {
+  //   deleteTask(date, id)
+  // }
+
+  // useEffect(() => {
+  //   const year = new Date().getFullYear();
+  //
+  //   fetchHolidays(year)
+  // }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <MainLayer>
+      <Header/>
+      <Calendar/>
+    </MainLayer>
   )
 }
 
