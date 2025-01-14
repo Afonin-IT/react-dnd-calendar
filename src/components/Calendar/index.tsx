@@ -1,21 +1,25 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {DAYS} from "../../constants";
 import {bodyStyle, controlsStyle, dayNameStyle, headerStyle, titleStyle, weekStyle, wrapperStyle} from "./style.ts";
 import DayCell from "../DayCell";
+import {useHolidayStore} from "../../store/holidayStore.ts";
+import {useTaskStore} from "../../store/taskStore.ts";
+import dayjs from "dayjs";
+import {css} from "@emotion/react";
 
 function Calendar() {
-  // const {holidays, isLoading, fetchHolidays} = useHolidayStore()
-  // const {tasks, move, reorder} = useTaskStore()
+  const {holidays, fetchHolidays} = useHolidayStore()
+  const {tasks: tasksArr} = useTaskStore()
 
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // useEffect(() => {
-  //   const year = currentDate.getFullYear();
-  //
-  //   if (!(year in holidays)) {
-  //     fetchHolidays(year);
-  //   }
-  // }, [currentDate]);
+  useEffect(() => {
+    const year = currentDate.getFullYear();
+
+    if (!(year in holidays)) {
+      fetchHolidays(year);
+    }
+  }, [currentDate]);
 
   const currentMonthIndex = currentDate.getMonth();
 
@@ -58,6 +62,15 @@ function Calendar() {
         const actualYear = actualDate.getFullYear();
         const isActualYear = actualYear === currentDate.getFullYear();
         const isToday = isActualMonth && isActualYear && currentDate.getDate() === date;
+        const isInactive = !isCurrentMonth || date < 1 || date > daysInMonth;
+
+        const currentDayDate = new Date(currentDate.getFullYear(), currentMonthIndex, date);
+        const formattedDate = dayjs(currentDayDate).format('YYYY-MM-DD');
+
+        const tasks = !isInactive && [
+          ...((holidays[actualYear] && holidays[actualYear][formattedDate]) || []),
+          ...(tasksArr[formattedDate] || []).sort((a, b) => a.order - b.order)
+        ]
 
         let dateText;
         if (date < 1) {
@@ -69,11 +82,13 @@ function Calendar() {
         }
 
         return <DayCell
+          tasks={tasks || []}
           dateText={dateText}
           day={day}
           week={week}
-          isInactive={!isCurrentMonth || date < 1 || date > daysInMonth}
-          isToday={isToday} />
+          isInactive={isInactive}
+          isToday={isToday}
+          key={`${week}-${day}`} />
       })}
     </div>
   ));
@@ -104,7 +119,12 @@ function Calendar() {
         </button>
       </div>
       <div css={bodyStyle}>
-        <div css={weekStyle}>
+        <div css={[
+          weekStyle,
+          css`
+            text-align: center;
+          `
+        ]}>
           {DAYS.map((day) => (
             <div css={dayNameStyle} key={day}>
               {day}

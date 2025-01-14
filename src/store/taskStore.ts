@@ -1,12 +1,12 @@
 import {create} from "zustand/react";
 import {persist} from "zustand/middleware";
-import {Task} from "../interfaces";
+import {Task, TaskType} from "../interfaces";
 import generateID from "../helpers/generateID.ts";
 
 interface TaskState {
   tasks: Record<string, Task[]>,
 
-  add: (date: string, task: Omit<Task, "id" | "order">) => void
+  add: (date: string, task: Omit<Task, "id" | "order" | "type">) => void
   update: (date: string, id: string, updatedTask: Partial<Omit<Task, "id">>) => void
   reorder: (date: string, updatedTasks: Task[]) => void
   move: (fromDate: string, toDate: string, id: string) => void
@@ -26,7 +26,8 @@ export const useTaskStore = create<TaskState>()(persist(
             {
               ...task,
               id: generateID(),
-              order: (state.tasks[date][(state.tasks[date]?.length || 0) - 1]?.order || 0) + 1
+              order: (state.tasks[date][(state.tasks[date]?.length || 0) - 1]?.order || 0) + 1,
+              type: TaskType.Task
             }
           ]
         }

@@ -32,7 +32,6 @@ export const bodyStyle = css`
 `
 
 export const weekStyle = css`
-  text-align: center;
   display: grid;
   grid-template-columns: repeat(${DAYS.length}, 1fr);
   grid-gap: 5px;

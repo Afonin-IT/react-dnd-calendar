@@ -1,10 +1,10 @@
 import {create} from "zustand/react";
 import {persist} from "zustand/middleware";
 import ApiService from "../utils/ApiService.ts";
-import {Task} from "../interfaces";
+import {Task, TaskType} from "../interfaces";
 import generateID from "../helpers/generateID.ts";
 
-export type HolidaysByDate = Record<string, Array<Omit<Task, 'order'>>>
+export type HolidaysByDate = Record<string, Array<Task>>
 
 interface HolidayState {
   holidays: Record<number, HolidaysByDate>,
@@ -26,10 +26,12 @@ export const useHolidayStore = create<HolidayState>()(persist(
       set({isLoading: true})
       try {
         const data = await ApiService.getPublicHolidays(year, countryCode);
-        const newHolidays = data.reduce((acc, holiday) => {
+        const newHolidays = data.reduce((acc, holiday, i) => {
           const task = {
             id: generateID(),
             name: holiday.localName,
+            type: TaskType.Holiday,
+            order: i
           };
 
           if (holiday.date in acc) {

@@ -6,9 +6,10 @@ export const dayStyle = css`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  row-gap: 10px;
   min-height: 150px;
   padding: 10px;
-  font-size: 14px;
+  font-size: 16px;
   background-color: #e3e5e6;
   cursor: pointer;
   border-radius: 3px;
@@ -17,9 +18,27 @@ export const dayStyle = css`
     background-color: #d7d7d7;
   }
   
+  
+  .header {
+    display: flex;
+    column-gap: 5px;
+    align-items: flex-end;
+  }
+  
   .number {
     font-weight: 700;
-    f
+  }
+  
+  .tasks-count {
+    font-size: 14px;
+    line-height: 16px;
+  }
+  
+  .tasks {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
   }
 `
 
@@ -29,13 +48,13 @@ export const inactiveStyle = css`
   cursor: unset;
 
   &:hover {
-    background-color: #e4e4e4;
+    background-color: #ececec;
   }
 `
 
 export const todayStyle = css`
   font-weight: 600;
-  background-color: #99ff9d;
+  background-color: #c1ffc4;
 
   &:hover {
     background-color: #7adf7e;
