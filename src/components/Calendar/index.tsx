@@ -9,7 +9,7 @@ import {css} from "@emotion/react";
 
 function Calendar() {
   const {holidays, fetchHolidays} = useHolidayStore()
-  const {tasks: tasksArr} = useTaskStore()
+  const {tasks: tasksArr, searchText} = useTaskStore()
 
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -67,9 +67,16 @@ function Calendar() {
         const currentDayDate = new Date(currentDate.getFullYear(), currentMonthIndex, date);
         const formattedDate = dayjs(currentDayDate).format('YYYY-MM-DD');
 
+        const currentHolidays = (holidays[actualYear] && holidays[actualYear][formattedDate]);
+        let currentTasks = tasksArr[formattedDate] || [];
+
+        if (searchText) {
+          currentTasks = currentTasks.filter(task => task.name.toLowerCase().includes(searchText.toLowerCase()))
+        }
+
         const tasks = !isInactive && [
-          ...((holidays[actualYear] && holidays[actualYear][formattedDate]) || []),
-          ...(tasksArr[formattedDate] || []).sort((a, b) => a.order - b.order)
+          ...(currentHolidays || []),
+          ...(currentTasks).sort((a, b) => a.order - b.order)
         ]
 
         let dateText;

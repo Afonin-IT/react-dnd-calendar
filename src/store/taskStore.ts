@@ -6,6 +6,9 @@ import generateID from "../helpers/generateID.ts";
 interface TaskState {
   tasks: Record<string, Task[]>,
 
+  searchText: string,
+  setSearchText: (value: string) => void,
+
   add: (date: string, task: Omit<Task, "id" | "order" | "type">) => void
   update: (date: string, id: string, updatedTask: Partial<Omit<Task, "id">>) => void
   reorder: (date: string, updatedTasks: Task[]) => void
@@ -16,6 +19,9 @@ interface TaskState {
 export const useTaskStore = create<TaskState>()(persist(
   (set) => ({
     tasks: {},
+
+    searchText: "",
+    setSearchText: (value) => set({searchText: value}),
 
     add: (date, task) => {
       set((state) => ({
