@@ -56,17 +56,14 @@ function Calendar() {
         const currentDayDate = currentDate.date(date);
         const formattedDate = currentDayDate.format('YYYY-MM-DD');
 
-        const currentHolidays = (holidays[currentDayDate.year()] && holidays[currentDayDate.year()][formattedDate]);
-        let currentTasks = tasksArr[formattedDate] || [];
+        const currentHolidays = !isInactive && (holidays[currentDayDate.year()] && holidays[currentDayDate.year()][formattedDate]) || [];
+        let currentTasks = !isInactive && tasksArr[formattedDate] || [];
 
-        if (searchText) {
-          currentTasks = currentTasks.filter(task => task.name.toLowerCase().includes(searchText.toLowerCase()))
+        if (searchText && currentTasks?.length) {
+          currentTasks = currentTasks
+            .filter(task => task.name.toLowerCase().includes(searchText.toLowerCase()))
+            .sort((a, b) => a.order - b.order)
         }
-
-        const tasks = !isInactive && [
-          ...(currentHolidays || []),
-          ...(currentTasks).sort((a, b) => a.order - b.order)
-        ]
 
         let dateText;
         if (date < 1) {
@@ -78,10 +75,10 @@ function Calendar() {
         }
 
         return <DayCell
-          tasks={tasks || []}
+          holidays={currentHolidays}
+          tasks={currentTasks}
           dateText={dateText}
-          day={day}
-          week={week}
+          date={formattedDate}
           isInactive={isInactive}
           isToday={isToday}
           key={formattedDate} />

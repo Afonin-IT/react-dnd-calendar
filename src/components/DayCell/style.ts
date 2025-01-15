@@ -1,20 +1,5 @@
 import {css} from "@emotion/react";
 
-export const addButtonStyle = css`
-  margin-left: auto;
-  align-self: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: .3s;
-  border-radius: 4px;
-  padding: 2px 5px;
-  
-  &:hover {
-    background: #0000001f;
-  }
-`
-
 export const dayStyle = css`
   display: flex;
   flex: 1;
@@ -28,11 +13,11 @@ export const dayStyle = css`
   background-color: #e3e5e6;
   cursor: pointer;
   border-radius: 3px;
+  overflow: hidden;
 
   &:hover {
     background-color: #d7d7d7;
   }
-  
   
   .header {
     display: flex;
@@ -50,7 +35,7 @@ export const dayStyle = css`
     line-height: 16px;
   }
   
-  .tasks {
+  .cards-wrapper {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -60,6 +45,10 @@ export const dayStyle = css`
   &:not(:hover) .add-button {
     opacity: 0;
     scale: 0;
+  }
+  
+  .add-button {
+    margin-left: auto;
   }
 `
 

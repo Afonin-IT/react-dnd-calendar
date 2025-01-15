@@ -2,53 +2,66 @@ import {create} from "zustand/react";
 import {persist} from "zustand/middleware";
 import {Task, TaskType} from "../interfaces";
 import generateID from "../helpers/generateID.ts";
+import {immer} from "zustand/middleware/immer";
 
-interface TaskState {
+type State = {
   tasks: Record<string, Task[]>,
-
   searchText: string,
-  setSearchText: (value: string) => void,
-
-  add: (date: string, task: Omit<Task, "id" | "order" | "type">) => void
-  update: (date: string, id: string, updatedTask: Partial<Omit<Task, "id">>) => void
-  reorder: (date: string, updatedTasks: Task[]) => void
-  move: (fromDate: string, toDate: string, id: string) => void
-  delete: (date: string, id: string) => void
 }
 
-export const useTaskStore = create<TaskState>()(persist(
-  (set) => ({
+type Actions = {
+  setSearchText: (value: string) => void,
+
+  add: (date: string, task: Omit<Task, "id" | "order" | "type">) => string
+  update: (id: string, updatedTask: Partial<Omit<Task, "id">>) => void
+  reorder: (date: string, updatedTasks: Task[]) => void
+  move: (fromDate: string, toDate: string, id: string) => void
+  remove: (id: string) => void
+}
+
+export const useTaskStore = create<State & Actions>()(persist(
+  immer((set) => ({
     tasks: {},
 
     searchText: "",
     setSearchText: (value) => set({searchText: value}),
 
     add: (date, task) => {
-      set((state) => ({
-        tasks: {
-          ...state.tasks,
-          [date]: [
-            ...(state.tasks[date] || []),
-            {
-              ...task,
-              id: generateID(),
-              order: (state.tasks[date][(state.tasks[date]?.length || 0) - 1]?.order || 0) + 1,
-              type: TaskType.Task
-            }
-          ]
+      const id = generateID();
+
+      set((state) => {
+        const order = state.tasks[date]
+          ? (state.tasks[date][(state.tasks[date]?.length || 0) - 1]?.order || 0) + 1
+          : 0;
+
+        const newTask = {
+          ...task,
+          id,
+          order,
+          type: TaskType.Task
         }
-      }))
+
+        if (state.tasks[date]) {
+          state.tasks[date].push(newTask)
+        } else {
+          state.tasks[date] = [newTask]
+        }
+      });
+
+      return id;
     },
 
-    update: (date, id, updatedTask) => {
-      set((state) => ({
-        tasks: {
-          ...state.tasks,
-          [date]: state.tasks[date].map(task =>
-            task.id === id ? { ...task, ...updatedTask } : task
-          )
+    update: (id, updatedTask) => {
+      set((state) => {
+        for (const key of Object.keys(state.tasks)) {
+          const tasks = state.tasks[key];
+          const taskIndex = tasks.findIndex(item => item.id === id);
+          if (taskIndex !== -1) {
+            state.tasks[key][taskIndex] = {...tasks[taskIndex], ...updatedTask}
+            break;
+          }
         }
-      }))
+      })
     },
 
     reorder: (date, updatedTasks) => {
@@ -79,15 +92,18 @@ export const useTaskStore = create<TaskState>()(persist(
       })
     },
 
-    delete: (date, id) => {
-      set((state) => ({
-        tasks: {
-          ...state.tasks,
-          [date]: state.tasks[date].filter(task => task.id !== id)
+    remove: (id) => {
+      set((state) => {
+        for (const key of Object.keys(state.tasks)) {
+          const index = state.tasks[key].findIndex(item => item.id === id);
+          if (index !== -1) {
+            state.tasks[key] = state.tasks[key].filter((_, i) => i !== index);
+            break;
+          }
         }
-      }))
+      })
     }
-  }),
+  })),
   {
     name: "tasks"
   }
