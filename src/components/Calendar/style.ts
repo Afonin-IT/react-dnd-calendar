@@ -17,6 +17,12 @@ export const headerStyle = css`
 export const titleStyle = css`
   font-weight: 700;
   font-size: 23px;
+  position: relative;
+  
+  & > img {
+    position: absolute;
+    right: -40px
+  }
 `
 
 export const controlsStyle = css`

@@ -8,13 +8,14 @@ export const taskStyle = css`
   border-radius: 5px;
   width: 100%;
   box-shadow: 1px 2px 3px 0px rgb(0 0 0 / 12%);
-  cursor: pointer;
   font-size: 12px;
   line-height: 16px;
   font-weight: 700;
+  cursor: move;
 
   &:hover {
-    background-color: #f9f9f9;
+    background-color: #f8f8f8;
+    outline: 1px solid #707070;
   }
 `
 

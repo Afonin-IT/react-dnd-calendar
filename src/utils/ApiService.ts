@@ -17,8 +17,6 @@ class ApiService {
   public async getPublicHolidays(year: number, countryCode: string = DEFAULT_COUNTRY_CODE): Promise<PublicHolidayV3Dto[]> {
    try {
      const response = await this.client.get(`/PublicHolidays/${year}/${countryCode}`);
-     console.log('response', response);
-
      return response.data;
    } catch (err) {
      this.handleError(err as AxiosError)

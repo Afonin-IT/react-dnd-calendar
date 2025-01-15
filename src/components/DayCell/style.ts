@@ -1,5 +1,20 @@
 import {css} from "@emotion/react";
 
+export const addButtonStyle = css`
+  margin-left: auto;
+  align-self: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: .3s;
+  border-radius: 4px;
+  padding: 2px 5px;
+  
+  &:hover {
+    background: #0000001f;
+  }
+`
+
 export const dayStyle = css`
   display: flex;
   flex: 1;
@@ -22,7 +37,8 @@ export const dayStyle = css`
   .header {
     display: flex;
     column-gap: 5px;
-    align-items: flex-end;
+    align-items: center;
+    width: 100%;
   }
   
   .number {
@@ -39,6 +55,11 @@ export const dayStyle = css`
     display: flex;
     flex-direction: column;
     row-gap: 8px;
+  }
+  
+  &:not(:hover) .add-button {
+    opacity: 0;
+    scale: 0;
   }
 `
 
@@ -57,6 +78,6 @@ export const todayStyle = css`
   background-color: #c1ffc4;
 
   &:hover {
-    background-color: #7adf7e;
+    background-color: #98fd9c;
   }
 `

@@ -1,6 +1,8 @@
-import {dayStyle, inactiveStyle, todayStyle} from "./style.ts";
+import {addButtonStyle, dayStyle, inactiveStyle, todayStyle} from "./style.ts";
 import {Task} from "../../interfaces";
 import TaskCard from "../TaskCard";
+import IconPlus from '../../assets/icon-plus.svg';
+import {css} from "@emotion/react";
 
 interface Props {
   tasks?: Task[]
@@ -30,11 +32,19 @@ const DayCell = ({tasks, dateText, isInactive, isToday}: Props) => {
           {tasks.length} card
         </div>
       ) : null}
+
+      {!isInactive ? (
+        <button css={addButtonStyle} className="add-button">
+          <img css={css`
+          width: 10px;
+        `} src={IconPlus} alt=""/>
+        </button>
+      ) : null}
     </div>
 
     {tasks?.length ? (
       <div className="tasks">
-        {tasks.map(task => <TaskCard task={task} />)}
+        {tasks.map(task => <TaskCard task={task} key={task.id} />)}
       </div>
     ) : null}
   </div>

@@ -6,46 +6,40 @@ import {useHolidayStore} from "../../store/holidayStore.ts";
 import {useTaskStore} from "../../store/taskStore.ts";
 import dayjs from "dayjs";
 import {css} from "@emotion/react";
+import Spinner from '../../assets/spinner.svg'
 
 function Calendar() {
-  const {holidays, fetchHolidays} = useHolidayStore()
+  const {holidays, fetchHolidays, isLoading} = useHolidayStore()
   const {tasks: tasksArr, searchText} = useTaskStore()
 
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(dayjs());
 
   useEffect(() => {
-    const year = currentDate.getFullYear();
+    const year = currentDate.year();
 
     if (!(year in holidays)) {
       fetchHolidays(year);
     }
   }, [currentDate]);
 
-  const currentMonthIndex = currentDate.getMonth();
+  const currentMonthIndex = currentDate.month();
 
-  // get the number of days in the current month
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const daysInMonth = currentDate.daysInMonth();
 
-  // get the day of the week for the first day of the current month (0 = Sun, 1 = Mon, ..., 6 = Sat)
-  const firstDayOfWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+  // (0 = Sun, 1 = Mon, ..., 6 = Sat)
+  const firstDayOfWeek = currentDate.startOf('month').day();
 
-  // get the number of days in the previous month
-  const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+  const prevMonthLastDay = currentDate.subtract(1, 'month').daysInMonth();
 
-  // get the current year and month from the current date
-  const currentYearMonth = `${currentDate.toLocaleString('en-US', {
-    month: 'long',
-  })} ${currentDate.getFullYear()}`;
+  const currentYearMonth = currentDate.format('MMMM YYYY');
 
-  // function to handle the back and next buttons by incrementing or decrementing the month by 1 (increment = -1 or 1)
   function handleDateChange(increment: number) {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() + increment);
+    const newDate = currentDate.add(increment, 'month');
     setCurrentDate(newDate);
   }
 
   function handleResetClick() {
-    setCurrentDate(new Date());
+    setCurrentDate(dayjs());
   }
 
   const dateBoxes = Array.from(
@@ -55,19 +49,14 @@ function Calendar() {
     <div css={weekStyle} key={week}>
       {Array.from({ length: 7 }, (_, i) => i).map((day) => {
         const date = week * 7 + day + 1 - firstDayOfWeek;
-        const isCurrentMonth = currentDate.getMonth() === currentMonthIndex;
-        const actualDate = new Date();
-        const actualMonth = actualDate.getMonth();
-        const isActualMonth = actualMonth === currentMonthIndex;
-        const actualYear = actualDate.getFullYear();
-        const isActualYear = actualYear === currentDate.getFullYear();
-        const isToday = isActualMonth && isActualYear && currentDate.getDate() === date;
-        const isInactive = !isCurrentMonth || date < 1 || date > daysInMonth;
 
-        const currentDayDate = new Date(currentDate.getFullYear(), currentMonthIndex, date);
-        const formattedDate = dayjs(currentDayDate).format('YYYY-MM-DD');
+        const isInactive = date < 1 || date > daysInMonth || currentDate.month() !== currentMonthIndex;
+        const isToday = currentDate.isSame(dayjs(), 'day') && date === currentDate.date();
 
-        const currentHolidays = (holidays[actualYear] && holidays[actualYear][formattedDate]);
+        const currentDayDate = currentDate.date(date);
+        const formattedDate = currentDayDate.format('YYYY-MM-DD');
+
+        const currentHolidays = (holidays[currentDayDate.year()] && holidays[currentDayDate.year()][formattedDate]);
         let currentTasks = tasksArr[formattedDate] || [];
 
         if (searchText) {
@@ -95,7 +84,7 @@ function Calendar() {
           week={week}
           isInactive={isInactive}
           isToday={isToday}
-          key={`${week}-${day}`} />
+          key={formattedDate} />
       })}
     </div>
   ));
@@ -105,20 +94,27 @@ function Calendar() {
       <div css={headerStyle}>
         <div css={controlsStyle}>
           <button
+            className="button"
             onClick={() => handleDateChange(-1)}
             type='button'
           >
             {"<"}
           </button>
           <button
+            className="button"
             onClick={() => handleDateChange(1)}
             type='button'
           >
             {">"}
           </button>
         </div>
-        <h1 css={titleStyle}>{currentYearMonth}</h1>
+        <h1 css={titleStyle}>
+          {currentYearMonth}
+
+          {isLoading && <img src={Spinner} alt="Loading..."/>}
+        </h1>
         <button
+          className="button"
           onClick={handleResetClick}
           type='button'
         >

@@ -30,7 +30,7 @@ body {
   background: #edeff1;
 }
 
-button {
+.button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -39,16 +39,16 @@ button {
   font-family: inherit;
   background-color: #fff;
   cursor: pointer;
-  transition: border 0.4s;
+  transition: background-color 0.4s;
   border-bottom: 3px solid #c7c7c7;
 }
 
-button:hover {
+.button:hover {
   border-bottom-width: 2px;
   background-color: #eaeaea;
 }
 
-button:active {
+.button:active {
   border-bottom-width: 0px;
 }
 
